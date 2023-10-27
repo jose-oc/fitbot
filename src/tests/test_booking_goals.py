@@ -32,7 +32,8 @@ class TestTransformBookingGoals:
         "input_yaml, expectation",
         (
             (
-                "", pytest.raises(InvalidBookingGoals),
+                "",
+                pytest.raises(InvalidBookingGoals),
             ),
             (
                 """
