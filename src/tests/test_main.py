@@ -11,7 +11,7 @@ from constants import book_endpoint
 from exceptions import NoBookingGoal, BoxClosed, NoClassOnTargetDayTime, DayOff
 from main import get_booking_goal_time, validate_target_day
 from main import get_class_to_book
-from main import load_days_off
+from main import load_text_file_content
 from main import main
 
 
@@ -89,7 +89,7 @@ class TestLoadDaysOff:
 
     def test_load_days_off_existing_file(self, temp_days_off_file):
         # Test loading dates from an existing file
-        dates = load_days_off(temp_days_off_file)
+        dates = load_text_file_content(temp_days_off_file)
         expected_dates = ["2023-09-20", "2023-09-21", "2023-09-22"]
         assert dates == expected_dates
 
@@ -97,14 +97,14 @@ class TestLoadDaysOff:
         # Test loading from a nonexistent file
         non_existent_file = "non_existent_file.txt"
         with pytest.raises(FileNotFoundError):
-            load_days_off(non_existent_file)
+            load_text_file_content(non_existent_file)
 
     def test_load_days_off_empty_file(self, temp_days_off_file):
         # Test loading from an empty file
         empty_file = temp_days_off_file.parent / "empty_days_off.txt"
         with open(empty_file, "w"):
             pass
-        dates = load_days_off(empty_file)
+        dates = load_text_file_content(empty_file)
         assert dates == []
 
     def test_load_days_off_whitespace_file(self, temp_days_off_file):
@@ -112,7 +112,7 @@ class TestLoadDaysOff:
         whitespace_file = temp_days_off_file.parent / "whitespace_days_off.txt"
         with open(whitespace_file, "w") as f:
             f.write("\n \n \n")
-        dates = load_days_off(whitespace_file)
+        dates = load_text_file_content(whitespace_file)
         assert dates == ["", "", ""]
 
 
