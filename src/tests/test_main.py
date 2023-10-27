@@ -174,7 +174,7 @@ class TestMain:
             return Mock(json=lambda: {}, status_code=HTTPStatus.OK)
 
     @freeze_time("2022-03-04")
-    def test_main(self):
+    def test_main_with_booking_goals(self):
         with patch("requests.Session.post") as m_post, patch(
             "requests.Session.get"
         ) as m_get:
@@ -187,6 +187,37 @@ class TestMain:
                 email="foo",
                 password="bar",
                 booking_goals={"0": {"time": "1700", "name": "Provenza"}},
+                booking_goals_yaml_file=None,
+                box_name="foo",
+                box_id=1,
+                days_in_advance=3,
+            )
+
+    @pytest.fixture
+    def temp_booking_goals_file(self, tmp_path):
+        booking_goals_yaml = """Monday:
+                  "17:00": Provenza
+                """
+        temp_file = tmp_path / "booking_goals.yaml"
+        with open(temp_file, "w") as f:
+            f.write(booking_goals_yaml)
+        yield temp_file
+
+    @freeze_time("2022-03-04")
+    def test_main_with_booking_goals_yaml_file(self, temp_booking_goals_file):
+        with patch("requests.Session.post") as m_post, patch(
+            "requests.Session.get"
+        ) as m_get:
+            m_post.side_effect = self.mock_request_post
+            m_get.return_value.status_code = HTTPStatus.OK
+            m_get.return_value.json.return_value = {
+                "bookings": [{"id": 123, "timeid": "1700_60", "className": "Provenza"}]
+            }
+            main(
+                email="foo",
+                password="bar",
+                booking_goals=None,
+                booking_goals_yaml_file=temp_booking_goals_file,
                 box_name="foo",
                 box_id=1,
                 days_in_advance=3,

@@ -78,11 +78,11 @@ def validate_target_day(target_day, days_off_file):
 def main(
     email,
     password,
-    booking_goals,
-    booking_goals_yaml_file,
     box_name,
     box_id,
     days_in_advance,
+    booking_goals=None,
+    booking_goals_yaml_file=None,
     family_id=None,
     days_off_file=None,
 ):
@@ -98,8 +98,12 @@ def main(
         sys.exit(1)
 
     if booking_goals_yaml_file:
-        booking_goals_yaml = load_text_file_content(booking_goals_yaml_file)
-        booking_goals = transform_yaml_to_dict(booking_goals_yaml)
+        try:
+            with open(booking_goals_yaml_file, "r") as file:
+                booking_goals = transform_yaml_to_dict(file)
+        except FileNotFoundError:
+            logging.info(f"File not found: {booking_goals_yaml_file}")
+            raise FileNotFoundError
 
     target_day = datetime.today() + timedelta(days=days_in_advance)
     try:
@@ -167,7 +171,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--booking-goals-yaml-file",
         required=False,
-        type=json.loads,
+        type=str,
         help=(
             "Path to a YAML file with the booking goals. "
             "You have to provide either --booking-goals-yaml-file or --booking-goals "
