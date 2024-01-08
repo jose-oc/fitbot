@@ -84,7 +84,10 @@ class TestLoadDaysOff:
     def temp_days_off_file(self, tmp_path):
         temp_file = tmp_path / "test_days_off.txt"
         with open(temp_file, "w") as f:
-            f.write("2023-09-20\n  \t 2023-09-21   # this is a comment\n# 2023-09-09\n2023-09-22\n")
+            f.write(
+                "2023-09-20\n  \t 2023-09-21   # this is a comment\n"
+                "# 2023-09-09\n2023-09-22\n"
+            )
         yield temp_file
 
     def test_load_days_off_existing_file(self, temp_days_off_file):
